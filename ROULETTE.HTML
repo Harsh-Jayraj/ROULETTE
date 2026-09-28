@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Topic Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Righteous&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #2b1055, #7597de);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.2);
+            --text-main: #ffffff;
+            --accent-primary: #ff007a;
+            --accent-hover: #cc0062;
+            --accent-success: #00f2fe;
+            --accent-success-hover: #00c3cc;
+            --slot-bg: #0f0c29;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Righteous', cursive;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        /* Setup Screen */
+        #setup-screen {
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        #setup-screen h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #00f2fe;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-success);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+
+        option {
+            background: #2b1055;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-family: 'Righteous', cursive;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 20px var(--accent-primary); }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.5);
+            color: white;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+        .btn-success {
+            background: var(--accent-success);
+            color: #000;
+        }
+        .btn-success:hover { background: var(--accent-success-hover); box-shadow: 0 0 20px var(--accent-success); }
+
+        /* Custom Category Form */
+        #custom-category-box {
+            display: none;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px dashed rgba(255,255,255,0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slot & Dashboard Screen */
+        #dashboard-screen {
+            display: none;
+            width: 100%;
+            max-width: 1000px;
+            gap: 30px;
+        }
+
+        @media(min-width: 800px) {
+            #dashboard-screen {
+                display: none; /* toggled via JS to flex */
+                align-items: flex-start;
+            }
+        }
+
+        .main-slot-panel {
+            flex: 2;
+            text-align: center;
+        }
+
+        .side-panel {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 25px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Scrollbar for side panel */
+        .side-panel::-webkit-scrollbar { width: 8px; }
+        .side-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .side-panel::-webkit-scrollbar-thumb { background: var(--accent-success); border-radius: 4px; }
+
+        .participant-info {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 25px;
+        }
+        .participant-info strong { color: var(--accent-success); }
+
+        /* Arcade Slot Window */
+        .slot-window {
+            background: var(--slot-bg);
+            border: 4px solid #fff;
+            border-radius: 15px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-window::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 30%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+            z-index: 1;
+        }
+        .slot-window::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 30%;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            z-index: 1;
+        }
+
+        .slot-text {
+            font-size: 28px;
+            font-family: 'Righteous', cursive;
+            text-align: center;
+            padding: 0 20px;
+            z-index: 2;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            transition: all 0.1s;
+        }
+
+        .blur { filter: blur(3px); opacity: 0.8; transform: translateY(10px); }
+        .winner { 
+            color: var(--accent-success); 
+            text-shadow: 0 0 20px var(--accent-success);
+            animation: jackpot 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        @keyframes jackpot {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #done-btn {
+            display: none;
+            margin-top: 15px;
+            background: #ffcc00;
+            color: #000;
+        }
+        #done-btn:hover { background: #ffdb4d; box-shadow: 0 0 20px #ffcc00; }
+
+        .remaining-count {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Side Panel List */
+        .side-panel h3 {
+            margin-bottom: 20px;
+            color: var(--accent-primary);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .completed-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .completed-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .completed-item:hover { background: rgba(255,255,255,0.1); }
+
+        .completed-item input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-success);
+            border-radius: 4px;
+            margin-right: 15px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .completed-item input[type="checkbox"]:checked {
+            background: var(--accent-success);
+        }
+        
+        .completed-item input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: #000;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .completed-item span {
+            font-size: 14px;
+            color: #ddd;
+            flex: 1;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .empty-state {
+            color: #777;
+            font-size: 14px;
+            font-style: italic;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        @media(max-width: 799px) {
+            #dashboard-screen { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Setup Screen -->
+    <div class="glass-panel" id="setup-screen">
+        <h1>🚀 ARCADE TOPIC SPINNER</h1>
+        <div class="form-group">
+            <label for="participant-name">Participant Name</label>
+            <input type="text" id="participant-name" placeholder="Enter your player name..." required>
+        </div>
+        <div class="form-group">
+            <label for="topic-area">Select Category</label>
+            <select id="topic-area">
+                <option value="" disabled selected>-- Choose your arena --</option>
+                <option value="finance">Finance</option>
+                <option value="analytics">Business Analytics</option>
+                <option value="economics">Economics</option>
+                <option value="history">History</option>
+                <option value="all">All Categories (Surprise Me!)</option>
+            </select>
+        </div>
+        
+        <button class="btn-primary" onclick="startApp()">START GAME 🎮</button>
+        <button class="btn-secondary" onclick="toggleCustomCategory()">➕ Add Custom Category</button>
+
+        <!-- Custom Category Builder -->
+        <div id="custom-category-box">
+            <div class="form-group">
+                <label>New Category Name</label>
+                <input type="text" id="custom-cat-name" placeholder="E.g., Marketing">
+            </div>
+            <div class="form-group">
+                <label>Topics (Comma Separated)</label>
+                <textarea id="custom-cat-topics" rows="3" placeholder="SEO, Branding, Social Media, PR..."></textarea>
+            </div>
+            <button class="btn-success" onclick="saveCustomCategory()">Save & Add to List</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen">
+        <!-- Main Slot Area -->
+        <div class="glass-panel main-slot-panel">
+            <h1>🎰 TOPIC ROULETTE</h1>
+            <div class="participant-info" id="greeting-text"></div>
+            
+            <div class="slot-window">
+                <div class="slot-text" id="slot-display">PRESS SPIN!</div>
+            </div>
+
+            <button id="spin-btn" class="btn-primary" onclick="spinSlot()">SPIN THE WHEEL</button>
+            <button id="done-btn" onclick="markAsDone()">⭐ Mark as Completed</button>
+            <button class="btn-secondary" style="margin-top:20px; font-size: 14px; padding: 10px;" onclick="goBack()">⬅ Back to Setup</button>
+            
+            <div class="remaining-count" id="remaining-count-text"></div>
+        </div>
+
+        <!-- Completed Topics Side Panel -->
+        <div class="side-panel">
+            <h3>🏆 Completed</h3>
+            <ul class="completed-list" id="completed-list-container">
+                <!-- Dynamically populated -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Database
+        const topicsData = {
+            finance: [
+                "Corporate Valuation", "Mergers & Acquisitions", "Options Pricing", 
+                "Portfolio Management", "Cryptocurrency & Blockchain", "Forex Trading", 
+                "Venture Capital Funding", "Bond Yields & Fixed Income", "Financial Risk Management", 
+                "Behavioral Finance", "Advanced Financial Modeling", "Derivatives & Swaps", 
+                "Capital Budgeting", "Algorithmic Trading", "Green & Sustainable Finance"
+            ],
+            analytics: [
+                "Predictive Modeling", "Customer Churn Analysis", "Advanced Segmentation", 
+                "A/B Testing", "Market Basket Analysis", "Interactive Data Viz", 
+                "Time Series Forecasting", "Machine Learning in Retail", "Supply Chain Optimization", 
+                "Sentiment Analysis & NLP", "Big Data Architecture", "Dynamic Pricing", 
+                "Web Analytics", "Operations Research", "Marketing Attribution"
+            ],
+            economics: [
+                "Microeconomic Utility", "Macro Stabilization Policy", "Game Theory", 
+                "Behavioral Economics", "International Trade Agreements", "Labor Market Dynamics", 
+                "Central Bank Policy", "Government Fiscal Policy", "Inflation Targeting", 
+                "Development Economics", "Environmental Economics", "Health Economics", 
+                "Supply and Demand Shocks", "Income Inequality", "Cryptoeconomics"
+            ],
+            history: [
+                "The Great Depression", "History of the Gold Standard", "2008 Financial Crisis", 
+                "Evolution of Central Banking", "The Dot-com Bubble", "Tulip Mania", 
+                "Silk Road Trade", "Industrial Revolution", "Bretton Woods", 
+                "East India Company", "History of Wall St", "Evolution of Fiat Currency", 
+                "Hyperinflation in Weimar", "Post-WWII Boom", "OPEC Oil Shocks"
+            ]
+        };
+
+        // State variables
+        let completedTopics = []; // Array of { topic: "...", originalCategory: "..." }
+        let currentArea = '';
+        let currentParticipant = '';
+        let isSpinning = false;
+        let lastSpunTopic = '';
+
+        // --- CUSTOM CATEGORY LOGIC ---
+        function toggleCustomCategory() {
+            const box = document.getElementById('custom-category-box');
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function saveCustomCategory() {
+            const nameInput = document.getElementById('custom-cat-name').value.trim();
+            const topicsInput = document.getElementById('custom-cat-topics').value.trim();
+
+            if (!nameInput || !topicsInput) {
+                alert("Please provide both a category name and at least one topic.");
+                return;
+            }
+
+            // Create safe key for data object
+            const catKey = nameInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            
+            // Parse topics
+            const newTopics = topicsInput.split(',')
+                .map(t => t.trim())
+                .filter(t => t.length > 0);
+
+            if (newTopics.length === 0) {
+                alert("Please provide valid comma-separated topics.");
+                return;
+            }
+
+            // Save to database
+            topicsData[catKey] = newTopics;
+
+            // Add to dropdown before the "All" option
+            const select = document.getElementById('topic-area');
+            const newOption = document.createElement('option');
+            newOption.value = catKey;
+            newOption.textContent = nameInput;
+            
+            // Insert before the last option ("All")
+            select.insertBefore(newOption, select.lastElementChild);
+            select.value = catKey; // Auto-select the new one
+
+            // Clean up UI
+            document.getElementById('custom-cat-name').value = '';
+            document.getElementById('custom-cat-topics').value = '';
+            toggleCustomCategory();
+            alert(`Success! "${nameInput}" added with ${newTopics.length} topics.`);
+        }
+
+
+        // --- CORE LOGIC ---
+        function getAvailableTopics() {
+            if (currentArea === 'all') {
+                let allActive = [];
+                for (let key in topicsData) {
+                    allActive = allActive.concat(topicsData[key]);
+                }
+                return allActive;
+            }
+            return topicsData[currentArea] || [];
+        }
+
+        function updateRemainingCount() {
+            const count = getAvailableTopics().length;
+            document.getElementById('remaining-count-text').innerText = `⚡ ${count} targets remaining in the chamber`;
+        }
+
+        function startApp() {
+            const nameInput = document.getElementById('participant-name').value.trim();
+            const areaSelect = document.getElementById('topic-area');
+
+            if (!nameInput) {
+                alert("Player name required to enter the arena.");
+                return;
+            }
+            if (!areaSelect.value) {
+                alert("Select a category before starting.");
+                return;
+            }
+
+            currentParticipant = nameInput;
+            currentArea = areaSelect.value;
+            const categoryName = areaSelect.options[areaSelect.selectedIndex].text;
+
+            // Set greeting
+            document.getElementById('greeting-text').innerHTML = 
+                `Player: <strong>${currentParticipant}</strong> | Deck: <strong>${categoryName}</strong>`;
+
+            // Reset UI
+            const display = document.getElementById('slot-display');
+            display.innerText = "PRESS SPIN!";
+            display.classList.remove('winner');
+            document.getElementById('done-btn').style.display = 'none';
+
+            // Switch screens
+            document.getElementById('setup-screen').style.display = 'none';
+            
+            const dashboard = document.getElementById('dashboard-screen');
+            dashboard.style.display = window.innerWidth > 800 ? 'flex' : 'block';
+
+            updateRemainingCount();
+            renderCompletedPanel();
+        }
+
+        function goBack() {
+            if(isSpinning) return;
+            document.getElementById('setup-screen').style.display = 'block';
+            document.getElementById('dashboard-screen').style.display = 'none';
+        }
+
+        function spinSlot() {
+            if (isSpinning) return;
+
+            const topics = getAvailableTopics();
+            if (topics.length === 0) {
+                alert("Empty! All topics in this category have been completed.");
+                return;
+            }
+            
+            isSpinning = true;
+            document.getElementById('done-btn').style.display = 'none';
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+
+            const display = document.getElementById('slot-display');
+            display.classList.remove('winner');
+            display.classList.add('blur');
+
+            let time = 0;
+            const totalSpinTime = 2500; // 2.5 seconds
+            const intervalSpeed = 70;   
+
+            const spinInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * topics.length);
+                display.innerText = topics[randomIndex].toUpperCase();
+                time += intervalSpeed;
+
+                if (time >= totalSpinTime) {
+                    clearInterval(spinInterval);
+                    finalizeSpin(topics);
+                }
+            }, intervalSpeed);
+        }
+
+        function finalizeSpin(topics) {
+            const display = document.getElementById('slot-display');
+            const finalIndex = Math.floor(Math.random() * topics.length);
+            
+            lastSpunTopic = topics[finalIndex];
+
+            display.classList.remove('blur');
+            display.classList.add('winner');
+            display.innerText = lastSpunTopic;
+
+            document.getElementById('done-btn').style.display = 'block';
+
+            isSpinning = false;
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = false;
+            spinBtn.innerText = "SPIN AGAIN";
+        }
+
+
+        // --- COMPLETED TOPICS LOGIC ---
+        function findOriginalCategory(topicName) {
+            for (let cat in topicsData) {
+                if (topicsData[cat].includes(topicName)) {
+                    return cat;
+                }
+            }
+            return null;
+        }
+
+        function markAsDone() {
+            if (!lastSpunTopic) return;
+
+            const originalCat = findOriginalCategory(lastSpunTopic);
+            
+            if (originalCat) {
+                // Remove from active pool
+                const index = topicsData[originalCat].indexOf(lastSpunTopic);
+                if (index > -1) {
+                    topicsData[originalCat].splice(index, 1);
+                }
+
+                // Add to completed array
+                completedTopics.push({
+                    topic: lastSpunTopic,
+                    originalCategory: originalCat,
+                    timestamp: Date.now()
+                });
+            }
+
+            // Update UI
+            document.getElementById('done-btn').style.display = 'none';
+            const display = document.getElementById('slot-display');
+            display.classList.remove('winner');
+            display.innerHTML = `<span style="color:#aaa; font-size: 20px;">LOCKED IN!</span>`;
+            
+            lastSpunTopic = ''; 
+            updateRemainingCount();
+            renderCompletedPanel();
+        }
+
+        function unmarkTopic(timestampId) {
+            // Find the item
+            const itemIndex = completedTopics.findIndex(t => t.timestamp === timestampId);
+            if(itemIndex === -1) return;
+
+            const item = completedTopics[itemIndex];
+
+            // Push back to active pool
+            if(topicsData[item.originalCategory]) {
+                topicsData[item.originalCategory].push(item.topic);
+            }
+
+            // Remove from completed array
+            completedTopics.splice(itemIndex, 1);
+
+            // Re-render
+            updateRemainingCount();
+            renderCompletedPanel();
+        }
+
+        function renderCompletedPanel() {
+            const container = document.getElementById('completed-list-container');
+            container.innerHTML = '';
+
+            if (completedTopics.length === 0) {
+                container.innerHTML = `<div class="empty-state">No topics completed yet. Spin and lock one in!</div>`;
+                return;
+            }
+
+            // Render from newest to oldest
+            const reversed = [...completedTopics].reverse();
+
+            reversed.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'completed-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = true;
+                // When they uncheck it, return it to the pool
+                checkbox.onchange = () => {
+                    setTimeout(() => unmarkTopic(item.timestamp), 200); // slight delay for visual satisfaction
+                };
+
+                const span = document.createElement('span');
+                span.innerText = item.topic;
+
+                li.appendChild(checkbox);
+                li.appendChild(span);
+                container.appendChild(li);
+            });
+        }
+        
+        // Handle window resize for flexbox layout reset
+        window.addEventListener('resize', () => {
+            const dashboard = document.getElementById('dashboard-screen');
+            if (dashboard.style.display !== 'none') {
+                dashboard.style.display = window.innerWidth > 800 ? 'flex' : 'block';
+            }
+        });
+    </script>
+</body>
+</html>

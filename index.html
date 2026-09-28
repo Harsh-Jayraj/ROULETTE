@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arcade Topic Generator</title>
+    <title>Arcade Topic Generator (Leveled)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Righteous&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #2b1055, #7597de);
+            --bg-gradient: linear-gradient(135deg, #1a0b2e, #4361c2);
             --card-bg: rgba(255, 255, 255, 0.1);
             --card-border: rgba(255, 255, 255, 0.2);
             --text-main: #ffffff;
@@ -15,14 +15,11 @@
             --accent-hover: #cc0062;
             --accent-success: #00f2fe;
             --accent-success-hover: #00c3cc;
+            --accent-warning: #ffcc00;
             --slot-bg: #0f0c29;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -48,45 +45,36 @@
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
         /* Setup Screen */
-        #setup-screen {
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-        }
+        #setup-screen { width: 100%; max-width: 550px; text-align: center; }
+        #setup-screen h1 { font-size: 32px; margin-bottom: 25px; color: #00f2fe; }
 
-        #setup-screen h1 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            color: #00f2fe;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+        .form-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .form-group { flex: 1; text-align: left; margin-bottom: 20px;}
+        .form-row .form-group { margin-bottom: 0; }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            color: #ccc;
         }
 
         input[type="text"], select, textarea {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s;
         }
@@ -97,10 +85,7 @@
             box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
         }
 
-        option {
-            background: #2b1055;
-            color: white;
-        }
+        option { background: #2b1055; color: white; }
 
         button {
             width: 100%;
@@ -116,27 +101,15 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        button:active {
-            transform: scale(0.97);
-        }
+        button:active { transform: scale(0.97); }
 
-        .btn-primary {
-            background: var(--accent-primary);
-            color: white;
-        }
+        .btn-primary { background: var(--accent-primary); color: white; }
         .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 20px var(--accent-primary); }
 
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.5);
-            color: white;
-        }
+        .btn-secondary { background: transparent; border: 2px solid rgba(255,255,255,0.5); color: white; }
         .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: white; }
 
-        .btn-success {
-            background: var(--accent-success);
-            color: #000;
-        }
+        .btn-success { background: var(--accent-success); color: #000; }
         .btn-success:hover { background: var(--accent-success-hover); box-shadow: 0 0 20px var(--accent-success); }
 
         /* Custom Category Form */
@@ -147,6 +120,7 @@
             border-radius: 15px;
             margin-top: 20px;
             border: 1px dashed rgba(255,255,255,0.3);
+            text-align: left;
             animation: slideDown 0.3s ease-out;
         }
 
@@ -155,7 +129,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Slot & Dashboard Screen */
+        /* Dashboard */
         #dashboard-screen {
             display: none;
             width: 100%;
@@ -164,16 +138,10 @@
         }
 
         @media(min-width: 800px) {
-            #dashboard-screen {
-                display: none; /* toggled via JS to flex */
-                align-items: flex-start;
-            }
+            #dashboard-screen { display: none; align-items: flex-start; }
         }
 
-        .main-slot-panel {
-            flex: 2;
-            text-align: center;
-        }
+        .main-slot-panel { flex: 2; text-align: center; }
 
         .side-panel {
             flex: 1;
@@ -185,19 +153,24 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Scrollbar for side panel */
         .side-panel::-webkit-scrollbar { width: 8px; }
         .side-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
         .side-panel::-webkit-scrollbar-thumb { background: var(--accent-success); border-radius: 4px; }
 
-        .participant-info {
-            font-size: 16px;
-            color: #ccc;
-            margin-bottom: 25px;
-        }
+        .participant-info { font-size: 15px; color: #ccc; margin-bottom: 25px; }
         .participant-info strong { color: var(--accent-success); }
+        .level-badge {
+            background: var(--accent-warning);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+            text-transform: uppercase;
+        }
 
-        /* Arcade Slot Window */
+        /* Slot Window */
         .slot-window {
             background: var(--slot-bg);
             border: 4px solid #fff;
@@ -213,22 +186,16 @@
         }
 
         .slot-window::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 30%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
-            z-index: 1;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent); z-index: 1;
         }
         .slot-window::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0; height: 30%;
-            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-            z-index: 1;
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); z-index: 1;
         }
 
         .slot-text {
-            font-size: 28px;
+            font-size: 26px;
             font-family: 'Righteous', cursive;
             text-align: center;
             padding: 0 20px;
@@ -251,111 +218,77 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        #done-btn {
-            display: none;
-            margin-top: 15px;
-            background: #ffcc00;
-            color: #000;
-        }
+        #done-btn { display: none; margin-top: 15px; background: #ffcc00; color: #000; }
         #done-btn:hover { background: #ffdb4d; box-shadow: 0 0 20px #ffcc00; }
 
-        .remaining-count {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #aaa;
-        }
+        .remaining-count { margin-top: 15px; font-size: 14px; color: #aaa; }
 
         /* Side Panel List */
         .side-panel h3 {
-            margin-bottom: 20px;
-            color: var(--accent-primary);
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
+            margin-bottom: 20px; color: var(--accent-primary);
+            border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 10px;
         }
 
-        .completed-list {
-            list-style: none;
-            text-align: left;
-        }
-
+        .completed-list { list-style: none; text-align: left; }
         .completed-item {
-            display: flex;
-            align-items: center;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: background 0.2s;
+            display: flex; align-items: center; background: rgba(255,255,255,0.05);
+            padding: 12px; border-radius: 8px; margin-bottom: 10px;
             border: 1px solid rgba(255,255,255,0.05);
         }
-
         .completed-item:hover { background: rgba(255,255,255,0.1); }
 
         .completed-item input[type="checkbox"] {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--accent-success);
-            border-radius: 4px;
-            margin-right: 15px;
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            appearance: none; width: 20px; height: 20px;
+            border: 2px solid var(--accent-success); border-radius: 4px;
+            margin-right: 15px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        .completed-item input[type="checkbox"]:checked {
-            background: var(--accent-success);
-        }
-        
+        .completed-item input[type="checkbox"]:checked { background: var(--accent-success); }
         .completed-item input[type="checkbox"]:checked::after {
-            content: '✔';
-            color: #000;
-            font-size: 14px;
-            font-weight: bold;
+            content: '✔'; color: #000; font-size: 14px; font-weight: bold;
         }
 
-        .completed-item span {
-            font-size: 14px;
-            color: #ddd;
-            flex: 1;
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-        
-        .empty-state {
-            color: #777;
-            font-size: 14px;
-            font-style: italic;
-            text-align: center;
-            margin-top: 40px;
-        }
+        .completed-item .topic-detail { flex: 1; display: flex; flex-direction: column; }
+        .completed-item .topic-name { font-size: 14px; color: #ddd; text-decoration: line-through; opacity: 0.7; }
+        .completed-item .topic-meta { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 3px; }
 
-        @media(max-width: 799px) {
-            #dashboard-screen { flex-direction: column; }
-        }
+        .empty-state { color: #777; font-size: 14px; font-style: italic; text-align: center; margin-top: 40px; }
+
+        @media(max-width: 799px) { #dashboard-screen { flex-direction: column; } }
     </style>
 </head>
 <body>
 
     <!-- Setup Screen -->
     <div class="glass-panel" id="setup-screen">
-        <h1>🚀 ARCADE TOPIC SPINNER</h1>
+        <h1>🚀 ROULETTE GENERATOR</h1>
         <div class="form-group">
-            <label for="participant-name">Participant Name</label>
+            <label>Participant Name</label>
             <input type="text" id="participant-name" placeholder="Enter your player name..." required>
         </div>
-        <div class="form-group">
-            <label for="topic-area">Select Category</label>
-            <select id="topic-area">
-                <option value="" disabled selected>-- Choose your arena --</option>
-                <option value="finance">Finance</option>
-                <option value="analytics">Business Analytics</option>
-                <option value="economics">Economics</option>
-                <option value="history">History</option>
-                <option value="all">All Categories (Surprise Me!)</option>
-            </select>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select id="topic-area">
+                    <option value="" disabled selected>-- Arena --</option>
+                    <option value="finance">Finance</option>
+                    <option value="analytics">Business Analytics</option>
+                    <option value="economics">Economics</option>
+                    <option value="history">History</option>
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Difficulty</label>
+                <select id="topic-level">
+                    <option value="" disabled selected>-- Level --</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="medium">Medium</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="all">All Levels</option>
+                </select>
+            </div>
         </div>
         
         <button class="btn-primary" onclick="startApp()">START GAME 🎮</button>
@@ -363,15 +296,25 @@
 
         <!-- Custom Category Builder -->
         <div id="custom-category-box">
-            <div class="form-group">
-                <label>New Category Name</label>
-                <input type="text" id="custom-cat-name" placeholder="E.g., Marketing">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>New Category Name</label>
+                    <input type="text" id="custom-cat-name" placeholder="E.g., Marketing">
+                </div>
+                <div class="form-group">
+                    <label>Target Level</label>
+                    <select id="custom-cat-level">
+                        <option value="beginner">Beginner</option>
+                        <option value="medium">Medium</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label>Topics (Comma Separated)</label>
-                <textarea id="custom-cat-topics" rows="3" placeholder="SEO, Branding, Social Media, PR..."></textarea>
+                <textarea id="custom-cat-topics" rows="3" placeholder="SEO, Branding, PR..."></textarea>
             </div>
-            <button class="btn-success" onclick="saveCustomCategory()">Save & Add to List</button>
+            <button class="btn-success" onclick="saveCustomCategory()">Save & Add</button>
         </div>
     </div>
 
@@ -379,7 +322,7 @@
     <div id="dashboard-screen">
         <!-- Main Slot Area -->
         <div class="glass-panel main-slot-panel">
-            <h1>🎰 TOPIC ROULETTE</h1>
+            <h1>🎰 TOPIC SPIN</h1>
             <div class="participant-info" id="greeting-text"></div>
             
             <div class="slot-window">
@@ -403,44 +346,109 @@
     </div>
 
     <script>
-        // Database
+        // Deeply Nested Database (15 topics per category, per level)
         const topicsData = {
-            finance: [
-                "Corporate Valuation", "Mergers & Acquisitions", "Options Pricing", 
-                "Portfolio Management", "Cryptocurrency & Blockchain", "Forex Trading", 
-                "Venture Capital Funding", "Bond Yields & Fixed Income", "Financial Risk Management", 
-                "Behavioral Finance", "Advanced Financial Modeling", "Derivatives & Swaps", 
-                "Capital Budgeting", "Algorithmic Trading", "Green & Sustainable Finance"
-            ],
-            analytics: [
-                "Predictive Modeling", "Customer Churn Analysis", "Advanced Segmentation", 
-                "A/B Testing", "Market Basket Analysis", "Interactive Data Viz", 
-                "Time Series Forecasting", "Machine Learning in Retail", "Supply Chain Optimization", 
-                "Sentiment Analysis & NLP", "Big Data Architecture", "Dynamic Pricing", 
-                "Web Analytics", "Operations Research", "Marketing Attribution"
-            ],
-            economics: [
-                "Microeconomic Utility", "Macro Stabilization Policy", "Game Theory", 
-                "Behavioral Economics", "International Trade Agreements", "Labor Market Dynamics", 
-                "Central Bank Policy", "Government Fiscal Policy", "Inflation Targeting", 
-                "Development Economics", "Environmental Economics", "Health Economics", 
-                "Supply and Demand Shocks", "Income Inequality", "Cryptoeconomics"
-            ],
-            history: [
-                "The Great Depression", "History of the Gold Standard", "2008 Financial Crisis", 
-                "Evolution of Central Banking", "The Dot-com Bubble", "Tulip Mania", 
-                "Silk Road Trade", "Industrial Revolution", "Bretton Woods", 
-                "East India Company", "History of Wall St", "Evolution of Fiat Currency", 
-                "Hyperinflation in Weimar", "Post-WWII Boom", "OPEC Oil Shocks"
-            ]
+            finance: {
+                beginner: [
+                    "Personal Budgeting", "Introduction to Stock Market", "Basic Accounting Principles", 
+                    "Time Value of Money", "Understanding Simple & Compound Interest", "Banking Basics", 
+                    "Introduction to Bonds", "Savings Accounts & CDs", "How Credit Cards Work", 
+                    "Understanding Mortgages", "Introduction to Taxes", "What are Mutual Funds?", 
+                    "Financial Literacy Basics", "Building an Emergency Fund", "Retirement 101 (401k/IRA)"
+                ],
+                medium: [
+                    "Corporate Valuation Methods", "Portfolio Diversification", "Dividend Policy", 
+                    "Capital Budgeting", "Financial Risk Identification", "Venture Capital Basics", 
+                    "Intro to Options Trading", "Real Estate Investment Trusts (REITs)", "Algorithmic Trading Intro", 
+                    "Financial Statement Analysis", "Liquidity Management", "Private Equity Structures", 
+                    "Hedging Strategies", "Forex Trading Fundamentals", "Behavioral Finance"
+                ],
+                advanced: [
+                    "Stochastic Calculus in Finance", "Black-Scholes Pricing Model", "Advanced Derivatives & Swaps", 
+                    "Sovereign Wealth Fund Strategies", "Credit Default Swaps (CDS)", "Collateralized Debt Obligations", 
+                    "High-Frequency Trading Algorithms", "Quantitative Finance Models", "Mergers & Acquisitions Structuring", 
+                    "Leveraged Buyout (LBO) Modeling", "Distressed Debt Investing", "Exotic Options Pricing", 
+                    "Basel III & Banking Regulation", "Yield Curve Dynamic Modeling", "Advanced Cryptoeconomics"
+                ]
+            },
+            analytics: {
+                beginner: [
+                    "What is Data Analytics?", "Intro to Excel for Business", "Understanding KPIs", 
+                    "Data Visualization Basics", "Intro to Google Analytics", "Descriptive Analytics", 
+                    "Basic Survey Analysis", "Intro to Dashboards", "What is Big Data?", 
+                    "Data Cleaning Principles", "Intro to SQL", "Customer Demographics", 
+                    "Social Media Metrics", "Understanding Conversion Rates", "Intro to Data Ethics"
+                ],
+                medium: [
+                    "Predictive Modeling", "Customer Churn Analysis", "Advanced Customer Segmentation", 
+                    "A/B Testing Methodologies", "Market Basket Analysis", "Interactive Data Viz (Tableau/BI)", 
+                    "Time Series Forecasting", "Supply Chain Analytics", "Sentiment Analysis & NLP", 
+                    "Dynamic Pricing Models", "Web & App Cohort Analysis", "Operations Research", 
+                    "Marketing Attribution Modeling", "Inventory Optimization", "HR & People Analytics"
+                ],
+                advanced: [
+                    "Machine Learning in Retail", "Deep Learning for Business", "Credit Card Fraud Detection Algorithms", 
+                    "Big Data Cloud Architecture", "Enterprise Data Governance", "Advanced SQL Optimization", 
+                    "Prescriptive Analytics", "AI Chatbot NLP Optimization", "Recommendation Engine Algorithms", 
+                    "Reinforcement Learning in Pricing", "Data Warehousing (Snowflake/Redshift)", "Markov Chains in Marketing", 
+                    "Stochastic Optimization", "Advanced Decision Tree Analysis", "Customer Lifetime Value (LTV) Prediction Models"
+                ]
+            },
+            economics: {
+                beginner: [
+                    "Supply and Demand", "What is Inflation?", "Opportunity Cost", 
+                    "Introduction to Microeconomics", "Introduction to Macroeconomics", "GDP and Economic Growth", 
+                    "Types of Economic Systems", "Unemployment Basics", "Monopoly vs Competition", 
+                    "Basic Elasticity", "Fiat Money vs Gold Standard", "Role of the Central Bank", 
+                    "Taxes and Subsidies", "The Business Cycle", "Trade and Tariffs"
+                ],
+                medium: [
+                    "Microeconomic Utility Theory", "Macroeconomic Stabilization", "Game Theory in Oligopolies", 
+                    "Behavioral Economics & Nudges", "International Trade Agreements", "Labor Market Dynamics", 
+                    "Central Bank Monetary Policy", "Government Fiscal Policy", "Inflation Targeting Mechanisms", 
+                    "Development Economics", "Environmental Economics", "Health Economics & Policy", 
+                    "Public Choice Theory", "Income Inequality and Gini Coefficient", "Cryptocurrency Economics"
+                ],
+                advanced: [
+                    "Economic Growth Models (Solow-Swan)", "Dynamic Stochastic General Equilibrium (DSGE)", "Advanced Welfare Economics", 
+                    "Urban & Spatial Economics", "Advanced Experimental Economics", "Tax Incidence & Deadweight Loss modeling", 
+                    "Exchange Rate Determination Theories", "Automation & Labor Displacement Modeling", "The Circular Economy Transition", 
+                    "Keynesian vs. Neoclassical Synthesis", "Mechanism Design Theory", "Advanced Institutional Economics", 
+                    "Econometrics & Causal Inference", "Resource Scarcity & Allocation", "Asymmetric Information (Moral Hazard)"
+                ]
+            },
+            history: {
+                beginner: [
+                    "The Industrial Revolution", "History of Money & Bartering", "The Great Depression (Overview)", 
+                    "The Silk Road Trade Route", "Invention of the Stock Market", "Roaring Twenties Economy", 
+                    "Post-WWII Economic Boom", "The Printing Press Impact", "History of Agriculture", 
+                    "The Gold Rush Economy", "Early Taxation Systems", "The Rise of Guilds", 
+                    "History of the Credit Card", "The Spice Trade", "Introduction of Paper Money"
+                ],
+                medium: [
+                    "History of the Gold Standard", "The 2008 Global Financial Crisis", "Evolution of Central Banking", 
+                    "The Dot-com Bubble (1990s)", "Tulip Mania (1637)", "Bretton Woods System", 
+                    "Rise of the East India Company", "Evolution of Fiat Currency", "Hyperinflation in the Weimar Republic", 
+                    "The Asian Financial Crisis (1997)", "History of Early Lending & Usury", "OPEC Oil Shocks of the 1970s", 
+                    "Mercantilism vs Capitalism", "The Savings and Loan Crisis", "History of Labor Unions"
+                ],
+                advanced: [
+                    "The South Sea Bubble of 1720", "Economic Impact of the Black Death", "The Plaza Accord (1985)", 
+                    "Evolution of Modern Accounting (Pacioli)", "History of Antitrust Laws (Sherman Act)", "Economic Reforms in Post-Soviet States", 
+                    "The Panic of 1907 and the Fed", "History of Algorithmic & Quants", "Origins of Insurance Markets (Lloyd's)", 
+                    "The Enron Scandal Deep Dive", "History of Free Trade Agreements (NAFTA/GATT)", "Japanese Asset Price Bubble (1980s)", 
+                    "Latin American Debt Crisis (1980s)", "Evolution of Shadow Banking", "The Long Depression (1873-1896)"
+                ]
+            }
         };
 
         // State variables
-        let completedTopics = []; // Array of { topic: "...", originalCategory: "..." }
+        let completedTopics = []; 
         let currentArea = '';
+        let currentLevel = '';
         let currentParticipant = '';
         let isSpinning = false;
-        let lastSpunTopic = '';
+        let lastSpunTopic = null; // { text, category, level }
 
         // --- CUSTOM CATEGORY LOGIC ---
         function toggleCustomCategory() {
@@ -450,84 +458,96 @@
 
         function saveCustomCategory() {
             const nameInput = document.getElementById('custom-cat-name').value.trim();
+            const levelSelect = document.getElementById('custom-cat-level').value;
             const topicsInput = document.getElementById('custom-cat-topics').value.trim();
 
             if (!nameInput || !topicsInput) {
-                alert("Please provide both a category name and at least one topic.");
+                alert("Please provide a category name and topics.");
                 return;
             }
 
-            // Create safe key for data object
             const catKey = nameInput.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            
-            // Parse topics
-            const newTopics = topicsInput.split(',')
-                .map(t => t.trim())
-                .filter(t => t.length > 0);
+            const newTopics = topicsInput.split(',').map(t => t.trim()).filter(t => t.length > 0);
 
-            if (newTopics.length === 0) {
-                alert("Please provide valid comma-separated topics.");
-                return;
+            if (newTopics.length === 0) return;
+
+            // Ensure category exists in DB
+            if (!topicsData[catKey]) {
+                topicsData[catKey] = { beginner: [], medium: [], advanced: [] };
+                
+                // Add to dropdown
+                const select = document.getElementById('topic-area');
+                const newOption = document.createElement('option');
+                newOption.value = catKey;
+                newOption.textContent = nameInput;
+                select.insertBefore(newOption, select.lastElementChild); // Insert before "All"
             }
 
-            // Save to database
-            topicsData[catKey] = newTopics;
+            // Push to selected level
+            topicsData[catKey][levelSelect].push(...newTopics);
 
-            // Add to dropdown before the "All" option
-            const select = document.getElementById('topic-area');
-            const newOption = document.createElement('option');
-            newOption.value = catKey;
-            newOption.textContent = nameInput;
-            
-            // Insert before the last option ("All")
-            select.insertBefore(newOption, select.lastElementChild);
-            select.value = catKey; // Auto-select the new one
-
-            // Clean up UI
+            // Cleanup UI
             document.getElementById('custom-cat-name').value = '';
             document.getElementById('custom-cat-topics').value = '';
             toggleCustomCategory();
-            alert(`Success! "${nameInput}" added with ${newTopics.length} topics.`);
+            
+            // Auto-select
+            document.getElementById('topic-area').value = catKey;
+            document.getElementById('topic-level').value = levelSelect;
+            
+            alert(`Added ${newTopics.length} topics to ${nameInput} (${levelSelect})!`);
         }
-
 
         // --- CORE LOGIC ---
         function getAvailableTopics() {
-            if (currentArea === 'all') {
-                let allActive = [];
-                for (let key in topicsData) {
-                    allActive = allActive.concat(topicsData[key]);
+            let pool = [];
+            
+            const categoriesToSearch = (currentArea === 'all') ? Object.keys(topicsData) : [currentArea];
+            const levelsToSearch = (currentLevel === 'all') ? ['beginner', 'medium', 'advanced'] : [currentLevel];
+
+            categoriesToSearch.forEach(cat => {
+                if(topicsData[cat]) {
+                    levelsToSearch.forEach(lvl => {
+                        if(topicsData[cat][lvl]) {
+                            // Map to objects so we retain meta-data during the spin
+                            const mapped = topicsData[cat][lvl].map(t => ({
+                                text: t,
+                                category: cat,
+                                level: lvl
+                            }));
+                            pool = pool.concat(mapped);
+                        }
+                    });
                 }
-                return allActive;
-            }
-            return topicsData[currentArea] || [];
+            });
+            return pool;
         }
 
         function updateRemainingCount() {
             const count = getAvailableTopics().length;
-            document.getElementById('remaining-count-text').innerText = `⚡ ${count} targets remaining in the chamber`;
+            document.getElementById('remaining-count-text').innerText = `⚡ ${count} targets remaining in this pool`;
         }
 
         function startApp() {
             const nameInput = document.getElementById('participant-name').value.trim();
             const areaSelect = document.getElementById('topic-area');
+            const levelSelect = document.getElementById('topic-level');
 
-            if (!nameInput) {
-                alert("Player name required to enter the arena.");
-                return;
-            }
-            if (!areaSelect.value) {
-                alert("Select a category before starting.");
-                return;
-            }
+            if (!nameInput) { alert("Player name required."); return; }
+            if (!areaSelect.value) { alert("Select a category."); return; }
+            if (!levelSelect.value) { alert("Select a difficulty level."); return; }
 
             currentParticipant = nameInput;
             currentArea = areaSelect.value;
-            const categoryName = areaSelect.options[areaSelect.selectedIndex].text;
+            currentLevel = levelSelect.value;
+            
+            const catName = areaSelect.options[areaSelect.selectedIndex].text;
+            const lvlName = levelSelect.options[levelSelect.selectedIndex].text;
 
             // Set greeting
             document.getElementById('greeting-text').innerHTML = 
-                `Player: <strong>${currentParticipant}</strong> | Deck: <strong>${categoryName}</strong>`;
+                `Player: <strong>${currentParticipant}</strong> | Deck: <strong>${catName}</strong> 
+                <span class="level-badge">${lvlName}</span>`;
 
             // Reset UI
             const display = document.getElementById('slot-display');
@@ -537,7 +557,6 @@
 
             // Switch screens
             document.getElementById('setup-screen').style.display = 'none';
-            
             const dashboard = document.getElementById('dashboard-screen');
             dashboard.style.display = window.innerWidth > 800 ? 'flex' : 'block';
 
@@ -554,9 +573,9 @@
         function spinSlot() {
             if (isSpinning) return;
 
-            const topics = getAvailableTopics();
-            if (topics.length === 0) {
-                alert("Empty! All topics in this category have been completed.");
+            const pool = getAvailableTopics();
+            if (pool.length === 0) {
+                alert("Empty! All topics in this specific category & level are completed.");
                 return;
             }
             
@@ -571,30 +590,30 @@
             display.classList.add('blur');
 
             let time = 0;
-            const totalSpinTime = 2500; // 2.5 seconds
+            const totalSpinTime = 2500;
             const intervalSpeed = 70;   
 
             const spinInterval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * topics.length);
-                display.innerText = topics[randomIndex].toUpperCase();
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                display.innerText = pool[randomIndex].text.toUpperCase();
                 time += intervalSpeed;
 
                 if (time >= totalSpinTime) {
                     clearInterval(spinInterval);
-                    finalizeSpin(topics);
+                    finalizeSpin(pool);
                 }
             }, intervalSpeed);
         }
 
-        function finalizeSpin(topics) {
+        function finalizeSpin(pool) {
             const display = document.getElementById('slot-display');
-            const finalIndex = Math.floor(Math.random() * topics.length);
+            const finalIndex = Math.floor(Math.random() * pool.length);
             
-            lastSpunTopic = topics[finalIndex];
+            lastSpunTopic = pool[finalIndex]; // captures text, category, level
 
             display.classList.remove('blur');
             display.classList.add('winner');
-            display.innerText = lastSpunTopic;
+            display.innerText = lastSpunTopic.text;
 
             document.getElementById('done-btn').style.display = 'block';
 
@@ -604,36 +623,25 @@
             spinBtn.innerText = "SPIN AGAIN";
         }
 
-
         // --- COMPLETED TOPICS LOGIC ---
-        function findOriginalCategory(topicName) {
-            for (let cat in topicsData) {
-                if (topicsData[cat].includes(topicName)) {
-                    return cat;
-                }
-            }
-            return null;
-        }
-
         function markAsDone() {
             if (!lastSpunTopic) return;
 
-            const originalCat = findOriginalCategory(lastSpunTopic);
+            const { text, category, level } = lastSpunTopic;
             
-            if (originalCat) {
-                // Remove from active pool
-                const index = topicsData[originalCat].indexOf(lastSpunTopic);
-                if (index > -1) {
-                    topicsData[originalCat].splice(index, 1);
-                }
-
-                // Add to completed array
-                completedTopics.push({
-                    topic: lastSpunTopic,
-                    originalCategory: originalCat,
-                    timestamp: Date.now()
-                });
+            // Remove from active pool
+            const index = topicsData[category][level].indexOf(text);
+            if (index > -1) {
+                topicsData[category][level].splice(index, 1);
             }
+
+            // Add to completed array
+            completedTopics.push({
+                topic: text,
+                originalCategory: category,
+                originalLevel: level,
+                timestamp: Date.now()
+            });
 
             // Update UI
             document.getElementById('done-btn').style.display = 'none';
@@ -641,27 +649,25 @@
             display.classList.remove('winner');
             display.innerHTML = `<span style="color:#aaa; font-size: 20px;">LOCKED IN!</span>`;
             
-            lastSpunTopic = ''; 
+            lastSpunTopic = null; 
             updateRemainingCount();
             renderCompletedPanel();
         }
 
         function unmarkTopic(timestampId) {
-            // Find the item
             const itemIndex = completedTopics.findIndex(t => t.timestamp === timestampId);
             if(itemIndex === -1) return;
 
             const item = completedTopics[itemIndex];
 
             // Push back to active pool
-            if(topicsData[item.originalCategory]) {
-                topicsData[item.originalCategory].push(item.topic);
+            if(topicsData[item.originalCategory] && topicsData[item.originalCategory][item.originalLevel]) {
+                topicsData[item.originalCategory][item.originalLevel].push(item.topic);
             }
 
             // Remove from completed array
             completedTopics.splice(itemIndex, 1);
 
-            // Re-render
             updateRemainingCount();
             renderCompletedPanel();
         }
@@ -675,7 +681,6 @@
                 return;
             }
 
-            // Render from newest to oldest
             const reversed = [...completedTopics].reverse();
 
             reversed.forEach(item => {
@@ -685,21 +690,30 @@
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.checked = true;
-                // When they uncheck it, return it to the pool
                 checkbox.onchange = () => {
-                    setTimeout(() => unmarkTopic(item.timestamp), 200); // slight delay for visual satisfaction
+                    setTimeout(() => unmarkTopic(item.timestamp), 200); 
                 };
 
-                const span = document.createElement('span');
-                span.innerText = item.topic;
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'topic-detail';
+                
+                const spanName = document.createElement('span');
+                spanName.className = 'topic-name';
+                spanName.innerText = item.topic;
+
+                const spanMeta = document.createElement('span');
+                spanMeta.className = 'topic-meta';
+                spanMeta.innerText = `${item.originalCategory} • ${item.originalLevel}`;
+
+                detailsDiv.appendChild(spanName);
+                detailsDiv.appendChild(spanMeta);
 
                 li.appendChild(checkbox);
-                li.appendChild(span);
+                li.appendChild(detailsDiv);
                 container.appendChild(li);
             });
         }
         
-        // Handle window resize for flexbox layout reset
         window.addEventListener('resize', () => {
             const dashboard = document.getElementById('dashboard-screen');
             if (dashboard.style.display !== 'none') {
